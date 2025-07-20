@@ -28,7 +28,7 @@ interface UsePDFPreviewBoundingBoxesProps {
 export function usePDFPreviewBoundingBoxes({
   chunks,
 }: UsePDFPreviewBoundingBoxesProps) {
-  const { hoveredSegmentId, showAllBoundingBoxes } = usePDFPreviewContext()
+  const { hoveredSegmentId, highlightedSegmentId, showAllBoundingBoxes } = usePDFPreviewContext()
 
   /**
    * Process all bounding boxes from chunks
@@ -41,14 +41,25 @@ export function usePDFPreviewBoundingBoxes({
    * Filter visible bounding boxes based on current state
    */
   const visibleBoundingBoxes = useMemo(() => {
+    // If there's a highlighted segment, show only that one
+    if (highlightedSegmentId) {
+      console.log('Showing only highlighted segment:', highlightedSegmentId)
+      return allBoundingBoxes.filter((box) => box.id === highlightedSegmentId)
+    }
+    
+    // If show all bounding boxes is enabled, show all
     if (showAllBoundingBoxes) {
+      console.log('Showing all bounding boxes:', allBoundingBoxes.length)
       return allBoundingBoxes
     }
+    
+    // Otherwise, show only the hovered segment
+    console.log('Showing only hovered segment:', hoveredSegmentId)
     return allBoundingBoxes.filter((box) => {
       if (!hoveredSegmentId) return false
       return box.id === hoveredSegmentId
     })
-  }, [allBoundingBoxes, hoveredSegmentId, showAllBoundingBoxes])
+  }, [allBoundingBoxes, hoveredSegmentId, highlightedSegmentId, showAllBoundingBoxes])
 
   /**
    * Get bounding boxes for a specific page

@@ -131,6 +131,11 @@ export function calculateBoundingBoxStyle(box: {
   page_width: number
   page_height: number
 }) {
+  // Check if we're in a browser environment
+  if (typeof document === 'undefined') {
+    return null
+  }
+
   const pageNumber = box.bbox.page_number
   const originalPageWidth = box.page_width
   const originalPageHeight = box.page_height
@@ -170,12 +175,21 @@ export function calculateBoundingBoxStyle(box: {
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) & { cancel: () => void } {
   let timeout: NodeJS.Timeout | null = null
-  return (...args: Parameters<T>) => {
+  const debounced = (...args: Parameters<T>) => {
     if (timeout) {
       clearTimeout(timeout)
     }
     timeout = setTimeout(() => func(...args), wait)
   }
+  
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+  }
+  
+  return debounced
 }

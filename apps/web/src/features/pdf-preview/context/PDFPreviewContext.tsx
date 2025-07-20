@@ -14,6 +14,7 @@ import { PDFPreviewContextType, PDFPreviewContextState } from '../types'
  */
 const initialState: PDFPreviewContextState = {
   hoveredSegmentId: null,
+  highlightedSegmentId: null,
   showAllBoundingBoxes: false,
   documentMetadata: {
     numPages: null,
@@ -31,6 +32,7 @@ const initialState: PDFPreviewContextState = {
  */
 type PDFPreviewAction =
   | { type: 'SET_HOVERED_SEGMENT'; payload: string | null }
+  | { type: 'SET_HIGHLIGHTED_SEGMENT'; payload: string | null }
   | { type: 'SET_SHOW_ALL_BOUNDING_BOXES'; payload: boolean }
   | {
       type: 'SET_DOCUMENT_METADATA'
@@ -53,6 +55,11 @@ function pdfPreviewReducer(
       return {
         ...state,
         hoveredSegmentId: action.payload,
+      }
+    case 'SET_HIGHLIGHTED_SEGMENT':
+      return {
+        ...state,
+        highlightedSegmentId: action.payload,
       }
     case 'SET_SHOW_ALL_BOUNDING_BOXES':
       return {
@@ -109,6 +116,10 @@ export function PDFPreviewProvider({
     dispatch({ type: 'SET_HOVERED_SEGMENT', payload: id })
   }, [])
 
+  const setHighlightedSegmentId = useCallback((id: string | null) => {
+    dispatch({ type: 'SET_HIGHLIGHTED_SEGMENT', payload: id })
+  }, [])
+
   const setShowAllBoundingBoxes = useCallback((show: boolean) => {
     dispatch({ type: 'SET_SHOW_ALL_BOUNDING_BOXES', payload: show })
   }, [])
@@ -130,6 +141,7 @@ export function PDFPreviewProvider({
   const contextValue: PDFPreviewContextType = {
     ...state,
     setHoveredSegmentId,
+    setHighlightedSegmentId,
     setShowAllBoundingBoxes,
     setDocumentMetadata,
     setPageDimensions,

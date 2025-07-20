@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { usePDFPreviewContext } from '../context/PDFPreviewContext'
 import { usePDFPreviewBoundingBoxes } from '../hooks/usePDFPreviewBoundingBoxes'
 import { PDFPreviewChunk, PDFPreviewConfig } from '../types'
@@ -33,10 +33,15 @@ export function BoundingBoxDisplay({
   onSegmentHover,
   onSegmentClick,
 }: BoundingBoxDisplayProps) {
-  const { setHoveredSegmentId } = usePDFPreviewContext()
+  const { setHoveredSegmentId, highlightedSegmentId } = usePDFPreviewContext()
   const { visibleBoundingBoxes } = usePDFPreviewBoundingBoxes({ chunks })
   const [hoveredBoxId, setHoveredBoxId] = useState<string | null>(null)
   const [hoveredBboxIndex, setHoveredBboxIndex] = useState<number | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleMouseEnter = useCallback(
     (segmentId: string, index: number, boxKey: string) => {
@@ -67,6 +72,11 @@ export function BoundingBoxDisplay({
     [chunks, onSegmentClick]
   )
 
+  // Don't render bounding boxes until component is mounted (client-side only)
+  if (!isMounted) {
+    return <div className="absolute inset-0 pointer-events-none" />
+  }
+
   return (
     <div className="absolute inset-0 pointer-events-none">
       {visibleBoundingBoxes.map((box, index) => {
@@ -77,6 +87,7 @@ export function BoundingBoxDisplay({
         const style = calculateBoundingBoxStyle(box)
         const boxKey = `${box.id}-${index}`
         const isHovered = hoveredBoxId === boxKey
+        const isHighlighted = highlightedSegmentId === box.id
 
         if (!style) return null
 
@@ -86,11 +97,13 @@ export function BoundingBoxDisplay({
             className="absolute border transition-opacity pointer-events-auto bg-transparent cursor-pointer"
             style={{
               ...style,
-              borderColor: colors.border,
-              backgroundColor: isHovered
+              borderColor: isHighlighted ? '#3B82F6' : colors.border,
+              backgroundColor: isHighlighted
+                ? '#DBEAFE'
+                : isHovered
                 ? `${colors.backgroundHover}20`
                 : 'transparent',
-              borderWidth: '1px',
+              borderWidth: isHighlighted ? '2px' : '1px',
             }}
             onMouseEnter={() => handleMouseEnter(box.id, index, boxKey)}
             onMouseLeave={handleMouseLeave}

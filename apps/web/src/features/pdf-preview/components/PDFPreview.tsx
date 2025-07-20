@@ -178,7 +178,7 @@ export function PDFPreview({
 
   return (
     <div
-      className={`relative h-full w-full max-w-full pdf-container ${className}`}
+      className={`relative h-full w-full max-w-full pdf-container flex flex-col ${className}`}
       ref={containerRef}
     >
       {shouldShowLoader && (
@@ -188,10 +188,10 @@ export function PDFPreview({
       )}
 
       <div
-        className="h-full overflow-auto flex flex-col items-center min-w-[200px] box-border"
+        className="h-full overflow-y-auto overflow-x-hidden flex flex-col items-center min-w-[200px] box-border"
         ref={scrollContainerRef}
       >
-        <div className="flex flex-col items-center justify-start relative">
+        <div className="flex flex-col items-center justify-start relative py-4">
           <Document
             noData={<LoadingSpinner />}
             file={url}

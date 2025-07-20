@@ -147,6 +147,8 @@ export interface ProcessedBoundingBox {
 export interface PDFPreviewContextState {
   /** Currently hovered segment ID */
   hoveredSegmentId: string | null
+  /** Currently highlighted segment ID */
+  highlightedSegmentId: string | null
   /** Whether to show all bounding boxes */
   showAllBoundingBoxes: boolean
   /** PDF document metadata */
@@ -168,6 +170,8 @@ export interface PDFPreviewContextState {
 export interface PDFPreviewContextActions {
   /** Set the currently hovered segment */
   setHoveredSegmentId: (id: string | null) => void
+  /** Set the currently highlighted segment */
+  setHighlightedSegmentId: (id: string | null) => void
   /** Toggle showing all bounding boxes */
   setShowAllBoundingBoxes: (show: boolean) => void
   /** Update document metadata */
